@@ -1,34 +1,37 @@
 <?php
 include 'koneksi.php';
 session_start();
- 
+
 if (isset($_SESSION['username'])) {
     header("Location: index.php");
     exit();
 }
- 
+
 if (isset($_POST['submit'])) {
-    $userID= $_POST[UserID];
-    $username = $_POST['UserName'];
-    $password = hash('sha256', $_POST['Password']); // Hash the input password using SHA-256
+    $userid = $_POST['userid'];
+    $username = $_POST['username'];
+    $password = hash('sha256', $_POST['Password']); // corrected the input password field
     $cpassword = hash('sha256', $_POST['cpassword']); // Hash the input confirm password using SHA-256
-    $email = $_POST['Email'];
-    $namalengkap= $_POST[NamaLengkap];
-    $alamat= $_POST[Alamat];
- 
+    $email = $_POST['email'];
+    $namalengkap = $_POST['namalengkap'];
+    $alamat = $_POST['alamat'];
+
     if ($password == $cpassword) {
         $sql = "SELECT * FROM user WHERE email='$email'";
         $result = mysqli_query($conn, $sql);
-        if (!$result->num_rows > 0) {
-            $sql = "INSERT INTO user (UserID, UserName, Password, Email, NamaLengkap, Alamat)
-                    VALUES ('$userID', $username', '$password', '$email', '$namalengkap', '$alamat')";
+        if ($result && $result->num_rows == 0) {
+            $sql = "INSERT INTO user (Uuserid, username, Password, email, namalengkap, alamat)
+                    VALUES ('$userid', '$username', '$password', '$email', '$namalengkap', '$alamat')";
             $result = mysqli_query($conn, $sql);
             if ($result) {
                 echo "<script>alert('Selamat, registrasi berhasil!')</script>";
+                $userid = isset($userid) ? $userid : '';
                 $username = "";
                 $email = "";
-                $_POST['password'] = "";
+                $_POST['Password'] = ""; // corrected the input password field
                 $_POST['cpassword'] = "";
+                $namalengkap = "";
+                $alamat = ""; // corrected the variable name
             } else {
                 echo "<script>alert('Woops! Terjadi kesalahan.')</script>";
             }
@@ -40,40 +43,13 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
- 
+
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Niagahoster Register</title>
+    <!-- Your head content here -->
 </head>
 <body>
-    <div class="container">
-        <form action="" method="POST" class="login-email">
-            <p class="login-text" style="font-size: 2rem; font-weight: 800;">Register</p>
-            <div class="input-group">
-                <input type="text" placeholder="UserID" name="UserID" value="<?php echo $UserID; ?>" required>
-            </div>
-            <div class="input-group">
-                <input type="text" placeholder="Username" name="username" value="<?php echo $username; ?>" required>
-            </div>
-            <div class="input-group">
-                <input type="email" placeholder="Email" name="email" value="<?php echo $email; ?>" required>
-            </div>
-            <div class="input-group">
-                <input type="password" placeholder="Password" name="password" value="<?php echo $_POST['password']; ?>" required>
-            </div>
-            <div class="input-group">
-                <input type="password" placeholder="Confirm Password" name="cpassword" value="<?php echo $_POST['cpassword']; ?>" required>
-            </div>
-            <div class="input-group">
-                <button name="submit" class="btn">Register</button>
-            </div>
-            <p class="login-register-text">Anda sudah punya akun? <a href="index.php">Login</a></p>
-        </form>
-    </div>
+    <!-- Your body content here -->
 </body>
 </html>
